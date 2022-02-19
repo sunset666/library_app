@@ -11,8 +11,11 @@ from app.models import User, Book
 @app.route('/index')
 @login_required
 def index():
-    books = Book.query.filter_by(user_id=current_user.id)
-    return render_template('index.html', title='User Library', books=books)
+    page = request.args.get('page', 1, type=int)
+    books = Book.query.filter_by(user_id=current_user.id).paginate(page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('index', page=books.next_num) if books.has_next else None
+    prev_url = url_for('index', page=books.prev_num) if books.has_prev else None
+    return render_template('index.html', title='Home', books=books.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/login', methods=['GET', 'POST'])

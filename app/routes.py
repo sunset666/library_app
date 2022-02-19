@@ -1,11 +1,14 @@
+import datetime
+
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-from app.email import send_password_reset_email
+from app.email import send_password_reset_email, send_email
 from app.forms import LoginForm, RegistrationForm, BookForm, ResetPasswordRequestForm, ResetPasswordForm
 from app import app, db
 from app.models import User, Book
+from app.token import generate_confirmation_token, confirm_token
 
 
 @app.route('/')
@@ -26,8 +29,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+        if user is None or not user.check_password(form.password.data) or not user.activated:
+            flash('Invalid username or password or please use the link sent to your email!!')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -53,9 +56,31 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, you are now a registered user! Go to your email and click to activate')
+        token = generate_confirmation_token(user.email)
+        confirm_url = url_for('confirm_email', token=token, _external=True)
+        html = render_template('register_confirmation.html', confirm_url=confirm_url)
+        subject = "Please confirm your email"
+        send_email(subject=subject, sender=app.config['MAIL_SENDER'], recipients=[user.email], html_body=html)
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        email = confirm_token(token)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+    user = User.query.filter_by(email=email).first_or_404()
+    if user.activated:
+        flash('Account already confirmed. Please login.', 'success')
+    else:
+        user.activated = True
+        db.session.add(user)
+        db.session.commit()
+        flash('You have confirmed your account. Thanks!', 'success')
+    return redirect(url_for('index'))
 
 
 @app.route('/add', methods=['GET', 'POST'])

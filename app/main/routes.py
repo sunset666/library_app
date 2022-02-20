@@ -2,8 +2,9 @@ from flask import request, url_for, render_template, flash, redirect, current_ap
 from flask_login import login_required, current_user
 
 from app import db
+from app.auth.email import send_email
 from app.main import bp
-from app.main.forms import BookForm
+from app.main.forms import BookForm, ShareBookForm
 from app.models import Book
 
 
@@ -11,11 +12,9 @@ from app.models import Book
 @bp.route('/index')
 @login_required
 def index():
-    page = request.args.get('page', 1, type=int)
-    books = Book.query.filter_by(user_id=current_user.id).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('main.index', page=books.next_num) if books.has_next else None
-    prev_url = url_for('main.index', page=books.prev_num) if books.has_prev else None
-    return render_template('index.html', title='Home', books=books.items, next_url=next_url, prev_url=prev_url)
+    books = Book.query.filter_by(user_id=current_user.id)
+    form = ShareBookForm()
+    return render_template('index.html', title='Home', books=books, form=form)
 
 
 @bp.route('/add', methods=['GET', 'POST'])
@@ -29,4 +28,19 @@ def add():
         db.session.commit()
         flash('Congratulations, you added a new book!')
         return redirect(url_for('main.index'))
-    return render_template('book_add.html', title='Register', form=form)
+    return render_template('main/book_add.html', title='Register', form=form)
+
+
+@bp.route('/share', methods=['POST'])
+@login_required
+def share_library():
+    form = ShareBookForm()
+    if form.validate_on_submit():
+        books = Book.query.filter_by(user_id=current_user.id)
+        html = render_template('email/shared_library.html', books=books)
+        subject = "%s has shared this library with you" % current_user
+        send_email(subject=subject, sender=current_app.config['MAIL_SENDER'], recipients=[form.email.data],
+                   html_body=html)
+        flash('Congratulations, you shared your library with %s' % form.email.data)
+    return redirect(url_for('main.index'))
+

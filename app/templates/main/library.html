@@ -1,0 +1,29 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<table id="booksTable">
+    <thead>
+        <tr>
+            <th>Author</th>
+            <th>Title</th>
+            <th>Date Purchased</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+        <tr>
+            <td>{{ book.author }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.purchased }}</td>
+            <td>{{ book.notes }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br/>
+<div>Share your library</div>
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form, action='share') }}
+    </div>
+</div>

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 
 
 class BookForm(FlaskForm):
@@ -9,3 +9,8 @@ class BookForm(FlaskForm):
     purchased = DateField('Purchase Date', validators=[DataRequired()])
     notes = TextAreaField('Notes')
     submit = SubmitField('Add Book')
+
+
+class ShareBookForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Share Library')

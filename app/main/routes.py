@@ -14,10 +14,11 @@ from app.models import Book
 def index():
     books = Book.query.filter_by(user_id=current_user.id)
     form = ShareBookForm()
-    return render_template('index.html', title='Home', books=books, form=form)
+    form2 = BookForm()
+    return render_template('index.html', title='Home', books=books, form=form, form2=form2)
 
 
-@bp.route('/add', methods=['GET', 'POST'])
+@bp.route('/add', methods=['POST'])
 @login_required
 def add():
     form = BookForm()
@@ -27,8 +28,24 @@ def add():
         db.session.add(book)
         db.session.commit()
         flash('Congratulations, you added a new book!')
+    return redirect(url_for('main.index'))
+
+
+@bp.route('/<int:id>')
+@login_required
+def update_book(id):
+    book = Book.query.filter_by(id=id).first()
+    form = BookForm(obj=book)
+    if form.validate_on_submit():
+        book = book.query.get(id)
+        book.author = form.author.data
+        book.title = form.title.data
+        book.purchased = form.purchased.data
+        book.notes = form.notes.data
+        db.session.commit()
+        flash('Congratulations, you updated your book!')
         return redirect(url_for('main.index'))
-    return render_template('main/book_add.html', title='Register', form=form)
+    return render_template('main/book_add.html', title='Update Book', form=form)
 
 
 @bp.route('/share', methods=['POST'])

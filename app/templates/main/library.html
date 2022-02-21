@@ -1,5 +1,22 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
+
+<div class="row">
+    <div style="float: left;">
+        <button id="share_button">Share your library !!</button>
+        <div>
+            {{ wtf.quick_form(form, action='share', id='share_lib', extra_classes='form_preview') }}
+        </div>
+    </div>
+    <div>
+        <button id="add_button">Add New Book !!</button>
+        <div>
+            {{ wtf.quick_form(form2, action='add', id='add_book', extra_classes='form_preview') }}
+        </div>
+    </div>
+</div>
+<br/>
+<br/>
 <table id="booksTable">
     <thead>
         <tr>
@@ -12,7 +29,7 @@
     <tbody>
     {% for book in books %}
         <tr>
-            <td>{{ book.author }}</td>
+            <td><a href="{{ url_for('main.update_book', id=book.id) }}">{{ book.author }}</a></td>
             <td>{{ book.title }}</td>
             <td>{{ book.purchased }}</td>
             <td>{{ book.notes }}</td>
@@ -21,9 +38,3 @@
     </tbody>
 </table>
 <br/>
-<div>Share your library</div>
-<div class="row">
-    <div class="col-md-4">
-        {{ wtf.quick_form(form, action='share') }}
-    </div>
-</div>

@@ -3,7 +3,8 @@
 {% block head %}
     {{ super() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.ico')}}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.ico')}}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libraryapp.css') }}" />
 {% endblock %}
 {% block title %}
     {% if title %}

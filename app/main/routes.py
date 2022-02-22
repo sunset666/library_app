@@ -34,10 +34,10 @@ def add():
 @bp.route('/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_book(id):
-    book = Book.query.filter_by(id=id).first()
+    book = Book.query.get_or_404(id)
     form = BookForm(obj=book)
     if form.validate_on_submit():
-        book = book.query.get(id)
+        book = book.query.get_or_404(id)
         book.author = form.author.data
         book.title = form.title.data
         book.purchased = form.purchased.data

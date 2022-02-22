@@ -31,7 +31,7 @@ def add():
     return redirect(url_for('main.index'))
 
 
-@bp.route('/<int:id>')
+@bp.route('/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_book(id):
     book = Book.query.filter_by(id=id).first()
@@ -45,7 +45,7 @@ def update_book(id):
         db.session.commit()
         flash('Congratulations, you updated your book!')
         return redirect(url_for('main.index'))
-    return render_template('main/book_add.html', title='Update Book', form=form)
+    return render_template('main/book_edit.html', title='Update Book', form=form)
 
 
 @bp.route('/share', methods=['POST'])

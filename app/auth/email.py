@@ -19,6 +19,6 @@ def send_email(subject, sender, recipients, html_body):
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
     send_email('LibraryApp: Reset Your Password',
-               sender=current_app.config['MAIL_SENDER'],
+               sender=current_app.config.get('MAIL_SENDER'),
                recipients=[user.email],
                html_body=render_template('email/reset_password.html', user=user, token=token))

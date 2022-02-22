@@ -8,7 +8,12 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://') \
                               or 'sqlite:///' + os.path.join(basedir, 'library_app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAIL_SERVER = 'localhost'
-    MAIL_PORT = '8025'
+    POSTS_PER_PAGE = 5
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = 'jd.betancurv@gmail.com'
+    MAIL_PASSWORD = '1q2w3e$R'
     MAIL_SENDER = 'dbetancur@consolesolutions.net'
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')

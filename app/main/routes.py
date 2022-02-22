@@ -55,8 +55,8 @@ def share_library():
     if form.validate_on_submit():
         books = Book.query.filter_by(user_id=current_user.id)
         html = render_template('email/shared_library.html', books=books)
-        subject = "%s has shared this library with you" % current_user
-        send_email(subject=subject, sender=current_app.config['MAIL_SENDER'], recipients=[form.email.data],
+        subject = "%s has shared this library with you" % current_user.username
+        send_email(subject=subject, sender=current_app.config.get('MAIL_SENDER'), recipients=[form.email.data],
                    html_body=html)
         flash('Congratulations, you shared your library with %s' % form.email.data)
     return redirect(url_for('main.index'))

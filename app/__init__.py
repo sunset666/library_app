@@ -37,7 +37,7 @@ def create_app(config_class=Config):
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
-    if app.config['LOG_TO_STDOUT']:
+    if app.config.get('LOG_TO_STDOUT'):
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(logging.INFO)
         app.logger.addHandler(stream_handler)

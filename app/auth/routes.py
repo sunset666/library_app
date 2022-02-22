@@ -49,7 +49,7 @@ def register():
         confirm_url = url_for('auth.confirm_email', token=token, _external=True)
         html = render_template('email/register_confirmation.html', confirm_url=confirm_url)
         subject = "Please confirm your email"
-        send_email(subject=subject, sender=current_app.config['MAIL_SENDER'], recipients=[user.email], html_body=html)
+        send_email(subject=subject, sender=current_app.config.get('MAIL_SENDER'), recipients=[user.email], html_body=html)
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title='Register', form=form)
 
